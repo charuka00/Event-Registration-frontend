@@ -48,24 +48,16 @@ function Home() {
     fetchEvents();
   }, [token]);
 
-  const handleRegister = async (eventId) => {
-    setMessage("");
-    try {
-      if (!token) {
-        setMessage("Please log in to register.");
-        return;
-      }
-      await axios.post(
-        `/api/events/${eventId}/register`,
-        { userId: "user123" },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setMessage("Registered successfully!");
-    } catch (err) {
-      setMessage(
-        "Registration failed: " + (err.response?.data?.message || "Something went wrong")
-      );
-    }
+  // Navigate to EventDetails page
+  const handleRegister = (eventId) => {
+    navigate(`/event/${eventId}`);
+  };
+
+  // Logout function
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    navigate("/"); // Redirect to start page
   };
 
   return (
@@ -83,7 +75,7 @@ function Home() {
           />
         ))}
 
-        {/* Gradient overlay for readability */}
+        {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/20 flex items-center justify-center">
           <h1 className="text-4xl font-bold text-white text-center drop-shadow-lg">
             Welcome to the Event Registration System
@@ -99,46 +91,54 @@ function Home() {
 
         {message && <p className="mb-4 text-center text-red-600">{message}</p>}
 
-        {events.length === 0 ? (
-          <p className="text-center text-gray-600">No events available yet.</p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {events.map((event) => (
-              <div
-                key={event._id}
-                className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
-              >
-                <h3 className="text-xl font-semibold mb-2 text-gray-800">
-                  {event.title}
-                </h3>
-                <p className="text-gray-600 mb-4">{event.description}</p>
-                <p className="text-sm text-gray-500 mb-1">
-                  Date: {new Date(event.date).toLocaleDateString()}
-                </p>
-                <p className="text-sm text-gray-500 mb-4">
-                  Location: {event.location}
-                </p>
-                <button
-                  onClick={() => handleRegister(event._id)}
-                  className="w-full bg-blue-600 text-white p-2 rounded cursor-pointer hover:bg-blue-700"
+        {token ? (
+          events.length === 0 ? (
+            <p className="text-center text-gray-600">No events available yet.</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {events.map((event) => (
+                <div
+                  key={event._id}
+                  className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
                 >
-                  Register
-                </button>
-              </div>
-            ))}
-          </div>
+                  <h3 className="text-xl font-semibold mb-2 text-gray-800">
+                    {event.title}
+                  </h3>
+                  <p className="text-gray-600 mb-4">{event.description}</p>
+                  <p className="text-sm text-gray-500 mb-1">
+                    Date: {new Date(event.date).toLocaleDateString()}
+                  </p>
+                  <p className="text-sm text-gray-500 mb-4">
+                    Location: {event.location}
+                  </p>
+                  <button
+                    onClick={() => handleRegister(event._id)}
+                    className="w-full bg-blue-600 text-white p-2 rounded cursor-pointer hover:bg-blue-700"
+                  >
+                    Register
+                  </button>
+                </div>
+              ))}
+            </div>
+          )
+        ) : (
+          <p className="text-center text-gray-600 mt-6">
+            Please log in to view events.
+          </p>
         )}
       </div>
 
-      {/* Add Event Button at the bottom */}
-      <div className="w-full p-4 bg-white shadow-inner">
-        <button
-          className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700"
-          onClick={() => navigate("/add-event")}
-        >
-          Add Event
-        </button>
-      </div>
+      {/* Logout Button at the Bottom */}
+      {token && (
+        <div className="flex justify-center p-6 bg-gray-200">
+          <button
+            onClick={handleLogout}
+            className="bg-red-500 text-white px-6 py-3 rounded hover:bg-red-600"
+          >
+            Logout
+          </button>
+        </div>
+      )}
     </div>
   );
 }
