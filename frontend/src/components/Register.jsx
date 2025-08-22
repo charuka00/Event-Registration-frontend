@@ -2,6 +2,9 @@
 import { useState } from "react";
 import axios from "axios";
 
+// Import background image
+import BackgroundImg from "../assets/0001.webp";
+
 function Register() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -40,10 +43,17 @@ function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+    <div
+      className="min-h-screen flex items-center justify-center px-4"
+      style={{
+        backgroundImage: `url(${BackgroundImg})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-lg shadow-md max-w-sm"
+        className="bg-white bg-opacity-90 p-6 rounded-lg shadow-md max-w-sm w-full"
       >
         <h2 className="text-2xl font-bold mb-4 text-center">Register</h2>
         <input
