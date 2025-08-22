@@ -1,55 +1,79 @@
-// frontend/src/components/Login.jsx (excerpt)
-import { useState } from "react";
-import axios from "axios";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
   const navigate = useNavigate();
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState("");
+
+  const handleChange = (e) => {
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage("");
+    setErr("");
+    setLoading(true);
 
     try {
-      const res = await axios.post("/api/users/login", {
-        email,
-        password,
+      const res = await fetch("http://localhost:3000/api/users/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
       });
-      localStorage.setItem("token", res.data.token); // Store token
-      console.log("Token stored:", res.data.token); // Debug
-      navigate("/");
-    } catch (err) {
-      setMessage(err.response?.data?.message || "Login failed. Please try again.");
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.message || "Login failed");
+
+      // ⭐ Save token and full user info
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("role", data.user.role);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      // ⭐ Redirect based on role
+      if (data.user.role === "admin") {
+        navigate("/admin-dashboard", { replace: true });
+      } else {
+        navigate("/", { replace: true }); // normal user → All Events page
+      }
+    } catch (e) {
+      setErr(e.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md max-w-sm">
-        <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
+    <div className="max-w-md mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-4">Login</h1>
+      {err && <p className="text-red-600 mb-3">{err}</p>}
+      <form onSubmit={handleSubmit} className="space-y-4">
         <input
+          name="email"
           type="email"
+          value={form.email}
+          onChange={handleChange}
           placeholder="Email"
-          className="border p-2 mb-3 rounded w-full"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          className="w-full border rounded p-2"
           required
         />
         <input
+          name="password"
           type="password"
+          value={form.password}
+          onChange={handleChange}
           placeholder="Password"
-          className="border p-2 mb-3 rounded w-full"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          className="w-full border rounded p-2"
           required
         />
-        <button className="w-full bg-blue-600 text-white p-2 rounded cursor-pointer hover:bg-blue-700">
-          Login
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-4 py-2 rounded"
+          disabled={loading}
+        >
+          {loading ? "Logging in..." : "Login"}
         </button>
-        {message && <p className="mt-3 text-gray-900">{message}</p>}
       </form>
     </div>
   );
