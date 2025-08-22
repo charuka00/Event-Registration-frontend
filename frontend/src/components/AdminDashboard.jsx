@@ -1,28 +1,52 @@
-// frontend/src/components/AdminDashboard.jsx
+import React from "react";
 import { useNavigate } from "react-router-dom";
 
 function AdminDashboard() {
   const navigate = useNavigate();
 
+  // Logout function
+  const handleLogout = () => {
+    // Remove stored auth data
+    localStorage.removeItem("token"); 
+    localStorage.removeItem("user");
+
+    // Redirect to Home Page
+    navigate("/");  // Make sure "/" is your home route
+  };
+
+  // Navigate to Add Event page
   const handleAddEvent = () => {
-    navigate("/add-event");
+    navigate("/add-event"); // Make sure this route exists
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start bg-gray-100 p-4 relative">
-      {/* Admin Dashboard sentence at the top */}
-      <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
+    <div className="max-w-5xl mx-auto p-6">
+      {/* Header with Logout & Add Event Button */}
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
 
-      {/* Add Event button in top right corner */}
-      <button
-        onClick={handleAddEvent}
-        className="absolute top-4 right-4 bg-blue-600 text-white p-3 rounded hover:bg-blue-700"
-      >
-        Add Event
-      </button>
+        {/* Buttons Container */}
+        <div className="flex gap-4">
+          <button
+            onClick={handleAddEvent}
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+          >
+            Add Event
+          </button>
 
-      {/* Optional: Add content here (e.g., events list) */}
-      <p className="mt-4">Welcome to the Admin Dashboard. Manage your events here.</p>
+          <button
+            onClick={handleLogout}
+            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
+
+      {/* Dashboard Content */}
+      <p className="text-gray-700">
+        Welcome, Admin! From here you can manage events, users, and more.
+      </p>
     </div>
   );
 }
