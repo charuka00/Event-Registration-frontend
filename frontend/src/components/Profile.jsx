@@ -1,6 +1,6 @@
-// src/components/Profile.jsx
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 function Profile() {
   const [user, setUser] = useState(null);
@@ -29,24 +29,50 @@ function Profile() {
 
   if (!user && !message) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-        Loading...
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-purple-900 to-pink-800">
+        <div className="text-white text-xl">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="bg-white p-6 rounded-lg shadow-md max-w-sm text-center">
-        <h2 className="text-2xl font-bold mb-4">Profile</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-purple-900 to-pink-800 px-4">
+      <div className="bg-gray-900 text-white p-8 rounded-lg shadow-lg max-w-2xl w-full transform transition-all duration-300 hover:shadow-2xl">
+        <h2 className="text-3xl font-bold mb-6 text-center">My Profile</h2>
         {message ? (
-          <p className="text-gray-600">{message}</p>
+          <p className="text-gray-300 text-center">{message}</p>
         ) : (
-          <div>
-            <p className="text-gray-600">First Name: {user.firstName}</p>
-            <p className="text-gray-600">Last Name: {user.lastName}</p>
-            <p className="text-gray-600">Email: {user.email}</p>
-            <p className="text-gray-600">Role: {user.role}</p>
+          <div className="space-y-4">
+            <div className="flex justify-between">
+              <p className="text-gray-300">First Name:</p>
+              <p className="font-medium">{user.firstName || "N/A"}</p>
+            </div>
+            <div className="flex justify-between">
+              <p className="text-gray-300">Last Name:</p>
+              <p className="font-medium">{user.lastName || "N/A"}</p>
+            </div>
+            <div className="flex justify-between">
+              <p className="text-gray-300">Email:</p>
+              <p className="font-medium">{user.email || "N/A"}</p>
+            </div>
+            <div className="flex justify-between">
+              <p className="text-gray-300">Role:</p>
+              <p className="font-medium">{user.role || "N/A"}</p>
+            </div>
+            <div className="mt-6 flex justify-end space-x-4">
+              <Link
+                to="/edit-profile"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-300"
+              >
+                Edit Profile
+              </Link>
+              <Link
+                to="/change-password"
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition duration-300"
+              >
+                Change Password
+              </Link>
+            </div>
           </div>
         )}
       </div>
